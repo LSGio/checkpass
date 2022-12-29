@@ -1,3 +1,4 @@
+import glob
 import os
 
 
@@ -93,18 +94,16 @@ class Checker:
 
     def check(self) -> None:
 
-        for (root, dirs, files) in os.walk(os.getcwd()):
-            for name in files:
-                full_name = os.path.join(root, name)
-                if not str(full_name).endswith(".txt"):
-                    continue
-                else:
-                    with open(full_name, encoding='utf-8') as current_file:
-                        for line in current_file:
-                            line = line.strip('\n')
-                            if line == self.__credential:
-                                self.__credential_occurrences += 1
-                                self.__credential_found = True
+        cwd = os.getcwd()
+
+        for name in glob.glob("./**/*.txt", root_dir=os.getcwd(), recursive=True):
+            full_name = os.path.join(cwd, name)
+            with open(full_name, encoding='utf-8') as current_file:
+                for line in current_file:
+                    line = line.strip('\n')
+                    if line == self.__credential:
+                        self.__credential_occurrences += 1
+                        self.__credential_found = True
 
         if not self.__credential_found:
             self.__handle_error_or_exit_with_code(Checker.EXIT_CODE_PASSWORD_NOT_IN_LISTS)
