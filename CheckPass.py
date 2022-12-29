@@ -22,10 +22,8 @@ def check_pass(password: str, mode: int = 1, verbose: bool = False) -> None:
                             found = True
 
     if not found:
-        print("Your password is not in the lists!")
         handle_error_or_exit_with_code(Globals.EXIT_CODE_PASSWORD_NOT_IN_LISTS)
     else:
-        print("Your password is in the lists!")
         if mode == 2:
             print(f"We counted {counter} occurrences of your password")
         handle_error_or_exit_with_code(Globals.EXIT_CODE_PASSWORD_IN_LISTS)
