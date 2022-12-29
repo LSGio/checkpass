@@ -10,8 +10,6 @@ class Checker:
             "somewhere inside the lists of previously used \\ leaked \\ common credentials\n" \
             "\n" \
             "FORMAT determines the format of the output\n" \
-            "VERBOSE enables printing of additional info during the scan (may affect scan speeds)\n" \
-            "Mandatory arguments to long options are mandatory for short options too\n" \
             "\n" \
             "Valid Formats : \n" \
             "\n" \
@@ -19,6 +17,7 @@ class Checker:
             "either the password exists or it doesn't exist\n" \
             "2 - print names of files during the scan\n" \
             "3 - print names of files and number of occurrences during the scan \n" \
+            "FLAGS affect the behaviour of the script, more info below (may affect scan speeds)\n" \
             "\n" \
             "Valid Flags : \n" \
             "\n" \
@@ -30,7 +29,7 @@ class Checker:
             "\n" \
             "Notes : \n" \
             "\n" \
-            "* CRLF line endings are not supported yet\n" \
+            "* Line endings other than LF are not supported yet\n" \
             "* Encodings other than UTF-8 are not supported yet\n"
 
     VALID_FORMATS = ("1", "2", "3")
