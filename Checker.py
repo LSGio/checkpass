@@ -2,7 +2,6 @@ import glob
 import os
 
 
-# TODO : implement progress bar
 
 class Checker:
 
