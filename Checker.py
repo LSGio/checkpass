@@ -5,6 +5,7 @@ import os
 # TODO : implement progress bar
 
 class Checker:
+
     USAGE = "Usage : python3 Main.py <password-string> [FORMAT] [FLAGS]...\n" \
             "\n" \
             "The script will compare the given password and check if it exists\n" \
@@ -61,18 +62,21 @@ class Checker:
 
         # Optional attributes
         self.__credential_occurrences = 0
+        self.__progress = 0
         self.__credential_found = False
         self.__flags = () if flags is None else flags
         self.__verbose = self.__is_verbose()
         self.__show_progress = self.__should_show_progress()
 
     def __get_valid_credential(self, credential: str) -> str:
+
         if credential is None:
             self.__handle_error_or_exit_with_code(Checker.ERROR_CODE_NOT_ENOUGH_ARGS)
         else:
             return credential
 
     def __get_valid_output_format(self, output_format: str) -> int:
+
         if output_format not in Checker.VALID_FORMATS:
             self.__handle_error_or_exit_with_code(Checker.ERROR_CODE_INVALID_FORMAT)
         else:
@@ -92,12 +96,44 @@ class Checker:
                 return True
         return False
 
+    def __handle_error_or_exit_with_code(self, code: int) -> None:
+
+        if not isinstance(code, int):
+            raise TypeError(f"Expected exit code must be of type 'int' but got : {type(code)}")
+        else:
+            print(f"\r\n{Checker.EXIT_MESSAGES[code]}")
+            exit(code)
+
+    def __print_verbose(self, message: str):
+
+        if self.__verbose:
+            print(f"\033[1K\r{message}")
+            self.__print_progress()
+
+    def __update_progress(self, current, total):
+
+        self.__progress = int(100 * (current / float(total)))
+
+    def __print_progress(self):
+
+        if self.__show_progress:
+            percent = '█' * self.__progress + '_' * (100 - self.__progress)
+            print(f"\033[1K\r[{percent}] {self.__progress}%", end="")
+
     def check(self) -> None:
 
         cwd = os.getcwd()
+        filenames = glob.glob("**/*.txt", root_dir=os.getcwd(), recursive=True)
+        number_of_files = len(filenames)
 
-        for name in glob.glob("./**/*.txt", root_dir=os.getcwd(), recursive=True):
-            full_name = os.path.join(cwd, name)
+        for index, filename in enumerate(filenames):
+
+            # Update progress
+            self.__update_progress(index + 1, number_of_files)
+            self.__print_progress()
+
+            full_name = os.path.join(cwd, filename)
+            self.__print_verbose(f"Checking file : {full_name}")
             with open(full_name, encoding='utf-8') as current_file:
                 for line in current_file:
                     line = line.strip('\n')
@@ -111,10 +147,3 @@ class Checker:
             if self.__output_format == 2:
                 print(f"We counted {self.__credential_occurrences} occurrences of your password")
             self.__handle_error_or_exit_with_code(Checker.EXIT_CODE_PASSWORD_IN_LISTS)
-
-    def __handle_error_or_exit_with_code(self, code: int) -> None:
-        if not isinstance(code, int):
-            raise TypeError(f"Expected exit code must be of type 'int' but got : {type(code)}")
-        else:
-            print(Checker.EXIT_MESSAGES[code])
-            exit(code)
