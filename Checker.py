@@ -93,11 +93,6 @@ class Checker:
 
         for flag in Checker.VALID_PROGRESS_FLAGS:
             if flag in self.__flags:
-                try:
-                    print("█")
-                except UnicodeError:
-                    print("Terminal doesn't seem to support progress bar, i'm disabling it.")
-                    return False
                 return True
         return False
 
