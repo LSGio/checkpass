@@ -33,15 +33,15 @@ class Checker:
 
     # Error codes
 
-    ERROR_CODE_NOT_ENOUGH_ARGS = -1
+    ERROR_CODE_NOT_ENOUGH_ARGS = 1
 
     # Corresponding error messages
 
-    EXIT_MESSAGES = (
+    ERROR_MESSAGES = (
         f"Missing required positional argument at position 1 \n\n{USAGE}"
     )
 
-    def __init__(self, credential: str = None, flags: tuple = None):
+    def __init__(self, credential: str | None = None, flags: tuple | None = None):
 
         # Mandatory attributes
         if credential is None:
@@ -49,20 +49,21 @@ class Checker:
         else:
             self.__credential = credential
 
-        # Check flags
-        self.__flags = () if flags is None else flags
+        # Flag attributes
+        self.__flags = flags if flags is not None else ()
+        self.__print_count = False
+        self.__show_progress = False
+        self.__verbose = False
+
         for flag in Checker.VALID_COUNT_FLAGS:
             if flag in self.__flags:
                 self.__print_count = True
-        self.__print_count = False
         for flag in Checker.VALID_PROGRESS_FLAGS:
             if flag in self.__flags:
                 self.__show_progress = True
-        self.__show_progress = False
         for flag in Checker.VALID_VERBOSE_FLAGS:
             if flag in self.__flags:
                 self.__verbose = True
-        self.__verbose = False
 
         # Internal variables
         self.__credential_occurrences = 0
@@ -83,11 +84,12 @@ class Checker:
     def __handle_error_or_exit_with_code(self, code: int) -> None:
 
         if not isinstance(code, int):
-            raise TypeError(f"Expected exit code must be of type 'int' but got : {type(code)}")
+            raise TypeError(f"Expected an exit code of type 'int' but got : {type(code)} instead")
         else:
-            print(f"\033[1K\r{Checker.EXIT_MESSAGES[code]}")
+            # Codes are enumerated from 1, so we subtract 1 to access the list of messages
+            print(f"\033[1K\r{Checker.ERROR_MESSAGES[code - 1]}")
             self.__print_progress()
-            exit(code)
+            exit(-1 * code)
 
     def __print_verbose(self, message: str):
 
@@ -95,7 +97,7 @@ class Checker:
             print(f"\033[1K\r{message}")
             self.__print_progress()
 
-    def __update_progress(self, current, total):
+    def __update_progress(self, current: int, total: int):
 
         self.__progress = int(100 * (current / float(total)))
 
@@ -103,7 +105,7 @@ class Checker:
 
         if self.__show_progress:
             percent = '█' * self.__progress + '_' * (100 - self.__progress)
-            print(f"\033[1K\r[{percent}] {self.__progress}%", end="")
+            print(f"\033[1K\r[{percent}] {self.__progress} %", end="")
 
     def __print_result(self):
         pass
@@ -128,5 +130,3 @@ class Checker:
                     if line == self.__credential:
                         self.__credential_occurrences += 1
                         self.__credential_found = True
-
-        self.__print_result()
