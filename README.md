@@ -11,4 +11,4 @@ exists among lists and collections of previously used/leaked/common credentials
 * This is a work-in-progress
 * The script works offline.
 * Collections are updated manually by one of the maintainers.
-* Most collection are taken from the [SecLists project](https://github.com/danielmiessler/SecLists).
+* Most collections are taken from the [SecLists project](https://github.com/danielmiessler/SecLists).
