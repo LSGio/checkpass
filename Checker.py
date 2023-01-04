@@ -99,7 +99,7 @@ class Checker:
 
     def __update_progress(self, current: int, total: int):
 
-        self.__progress = int(100 * (current / float(total)))
+        self.__progress = int(100 * (current / total))
 
     def __print_progress(self):
 
@@ -108,7 +108,12 @@ class Checker:
             print(f"\033[1K\r[{percent}] {self.__progress} %", end="")
 
     def __print_result(self):
-        pass
+
+        print()
+        print()
+        print(f"Password found : {self.__credential_found}")
+        if self.__print_count:
+            print(f"We counted {self.__credential_occurrences} occurrences of your password")
 
     def check(self) -> None:
 
@@ -130,3 +135,5 @@ class Checker:
                     if line == self.__credential:
                         self.__credential_occurrences += 1
                         self.__credential_found = True
+
+        self.__print_result()
