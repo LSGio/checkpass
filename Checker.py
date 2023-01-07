@@ -6,7 +6,7 @@ import sys
 
 class Checker:
 
-    USAGE = "Usage : python3 Main.py <password-string> [FLAGS]...\n" \
+    USAGE = "Usage : python3 Main.py password-string [FLAGS]...\n" \
             "\n" \
             "The script will compare the given password and check if it exists\n" \
             "somewhere inside the lists of previously used \\ leaked \\ common credentials\n" \
@@ -112,7 +112,7 @@ class Checker:
         print()
         print()
         print(f"Password found : {self.__credential_found}")
-        if self.__print_count:
+        if self.__print_count and self.__credential_found:
             print(f"We counted {self.__credential_occurrences} occurrences of your password")
 
     def check(self) -> None:
