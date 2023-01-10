@@ -2,59 +2,65 @@ import codecs
 import glob
 import os
 import sys
+import getpass
 
 
 class Checker:
 
-    USAGE = "Usage : python3 Main.py <password-string> [FLAGS]...\n" \
+    USAGE = "Usage : python3 Main.py [FLAGS]...\n" \
             "\n" \
             "The script will compare the given password and check if it exists\n" \
             "somewhere inside the lists of previously used \\ leaked \\ common credentials\n" \
             "\n" \
             "Valid Flags : \n" \
             "\n" \
+            "-h, --help\n" \
+            "\t print this help text\n" \
+            "\n" \
+            "-i, --insecure\n" \
+            "\t echo the password to the console\n" \
             "-v, --verbose\n" \
             "\t print additional information to the console\n" \
             "\n" \
             "-p, --progress\n" \
-            "\t show progress bar during the scan" \
+            "\t show progress bar during the scan\n" \
             "\n" \
             "-c, --count\n" \
-            "\t print the number of occurrences for the given password" \
+            "\t print the number of occurrences for the given password\n" \
+            "\n" \
             "Notes : \n" \
             "\n" \
+            "* Passwords are invisible by default when you type them\n" \
             "* Flags should be separated by space, no support for grouped flags yet\n" \
             "* Line endings other than LF are not supported yet\n" \
             "* Encodings other than UTF-8 are not supported yet\n"
 
+    VALID_HELP_FLAGS = ("-h", "--help")
+    VALID_INSECURE_FLAGS = ("-i", "--insecure")
     VALID_COUNT_FLAGS = ("-c", "--count")
     VALID_VERBOSE_FLAGS = ("-v", "--verbose")
     VALID_PROGRESS_FLAGS = ("-p", "--progress")
 
-    # Error codes
+    PASSWORD_PROMPT = "Please provide a credential: "
 
-    ERROR_CODE_NOT_ENOUGH_ARGS = 1
+    EXIT_CODE_OK = 0
 
-    # Corresponding error messages
+    def __init__(self, flags: tuple | None = None):
 
-    ERROR_MESSAGES = (
-        f"Missing required positional argument at position 1 \n\n{USAGE}"
-    )
-
-    def __init__(self, credential: str | None = None, flags: tuple | None = None):
-
-        # Mandatory attributes
-        if credential is None:
-            self.__handle_error_or_exit_with_code(Checker.ERROR_CODE_NOT_ENOUGH_ARGS)
-        else:
-            self.__credential = credential
-
-        # Flag attributes
+        # Default flag attributes
         self.__flags = flags if flags is not None else ()
+        self.__is_insecure = False
         self.__print_count = False
-        self.__show_progress = False
         self.__verbose = False
+        self.__show_progress = False
+        self.__files_dict = dict()
 
+        for flag in Checker.VALID_HELP_FLAGS:
+            if flag in self.__flags:
+                self.__print_error_and_exit_with_code(Checker.EXIT_CODE_OK, Checker.USAGE)
+        for flag in Checker.VALID_INSECURE_FLAGS:
+            if flag in self.__flags:
+                self.__is_insecure = True
         for flag in Checker.VALID_COUNT_FLAGS:
             if flag in self.__flags:
                 self.__print_count = True
@@ -64,6 +70,11 @@ class Checker:
         for flag in Checker.VALID_VERBOSE_FLAGS:
             if flag in self.__flags:
                 self.__verbose = True
+
+        if self.__is_insecure:
+            self.__credential = input(Checker.PASSWORD_PROMPT)
+        else:
+            self.__credential = getpass.getpass(Checker.PASSWORD_PROMPT)
 
         # Internal variables
         self.__credential_occurrences = 0
@@ -81,15 +92,17 @@ class Checker:
                 return True
         return False
 
-    def __handle_error_or_exit_with_code(self, code: int) -> None:
+    def __print_error_and_exit_with_code(self, code: int, message: str) -> None:
 
         if not isinstance(code, int):
             raise TypeError(f"Expected an exit code of type 'int' but got : {type(code)} instead")
-        else:
-            # Codes are enumerated from 1, so we subtract 1 to access the list of messages
-            print(f"\033[1K\r{Checker.ERROR_MESSAGES[code - 1]}")
+        if not isinstance(message, str):
+            raise TypeError(f"Expected an error message of type 'str' but got : {type(message)} instead")
+
+        print(f"\033[1K\r{message}")
+        if self.__show_progress:
             self.__print_progress()
-            exit(-1 * code)
+        exit(-1 * code)
 
     def __print_verbose(self, message: str):
 
