@@ -100,7 +100,7 @@ class Checker:
 
     def check(self) -> None:
 
-        glob_pattern_passwords = "Plain-Text/**/*.txt"
+        glob_pattern_passwords = "Passwords/**/*.txt"
         glob_pattern_hashes = "Hashes/**/*.txt"
         glob_pattern_login_pairs = "LoginPairs/**/*.txt"
 
