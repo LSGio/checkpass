@@ -15,6 +15,9 @@ class Checker:
             "-h, --help\n" \
             "\t print this help text\n" \
             "\n" \
+            "-lp, --login-pair\n" \
+            "\t search for a user:pass pair inside the collections\n" \
+            "\n" \
             "-i, --insecure\n" \
             "\t echo the password to the console\n" \
             "\n" \
@@ -32,6 +35,7 @@ class Checker:
             "* Encodings other than UTF-8 are not supported yet\n"
 
     VALID_HELP_FLAGS = ("-h", "--help")
+    VALID_LOGIN_PAIR_FLAGS = ("-lp", "--login-pair")
     VALID_INSECURE_FLAGS = ("-i", "--insecure")
     VALID_COUNT_FLAGS = ("-c", "--count")
     VALID_VERBOSE_FLAGS = ("-v", "--verbose")
@@ -52,12 +56,16 @@ class Checker:
         self.__flags = flags if flags is not None else ()
         self.__is_insecure = False
         self.__print_count = False
+        self.__login_pair = False
         self.__verbose = False
         self.__files_dict = dict()
 
         for flag in Checker.VALID_HELP_FLAGS:
             if flag in self.__flags:
                 self.__print_error_and_exit_with_code(Checker.EXIT_CODE_OK, Checker.USAGE)
+        for flag in Checker.VALID_LOGIN_PAIR_FLAGS:
+            if flag in self.__flags:
+                self.__login_pair = True
         for flag in Checker.VALID_INSECURE_FLAGS:
             if flag in self.__flags:
                 self.__is_insecure = True
@@ -106,7 +114,10 @@ class Checker:
         glob_pattern_login_pairs = "LoginPairs/**/*.txt"
 
         current_directory = os.getcwd()
-        filenames = glob.glob(glob_pattern_passwords, root_dir=current_directory, recursive=True)
+        if self.__login_pair:
+            filenames = glob.glob(glob_pattern_login_pairs, root_dir=current_directory, recursive=True)
+        else:
+            filenames = glob.glob(glob_pattern_passwords, root_dir=current_directory, recursive=True)
         self.__files_dict = dict.fromkeys(filenames, 0)
 
         for index, filename in enumerate(filenames):
