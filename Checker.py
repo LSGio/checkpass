@@ -17,6 +17,7 @@ class Checker:
             "\n" \
             "-i, --insecure\n" \
             "\t echo the password to the console\n" \
+            "\n" \
             "-v, --verbose\n" \
             "\t print scanned filenames, add an asterisk if credential is found there\n" \
             "\n" \
