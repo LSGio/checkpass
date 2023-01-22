@@ -6,6 +6,20 @@
 CheckPass is a python script that checks whether a given credential
 exists among lists and collections of previously used/leaked/common credentials
 
+## Usage
+
+Run with -h when running for the first time :
+
+```shell
+$ python Main.py -h
+```
+
+or
+
+```shell
+$ python3 Main.py -h
+```
+
 ## Notes
 
 * This is a work-in-progress
